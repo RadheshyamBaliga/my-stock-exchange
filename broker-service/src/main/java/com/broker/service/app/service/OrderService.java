@@ -17,8 +17,8 @@ public class OrderService {
 	public Order createOrder() {
 		Order o = new Order();
 		 o.setIsin("DE0006675788");
-		 o.setPrice(10.3);
-		 o.setQuantity(0);
+		 o.setPrice(10.5);
+		 o.setQuantity(250);
 		 o.setSide(Side.BUY);
 		 o.setBrokerId(brokerId);
 		 o.setBrokerOrderId(UUID.randomUUID().toString());

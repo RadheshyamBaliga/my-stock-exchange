@@ -1,12 +1,17 @@
 package com.exchange.service.app.core;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.UUID;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 
 import com.exchange.service.app.pojo.Execution;
 import com.exchange.service.app.pojo.Order;
@@ -18,7 +23,7 @@ public class OrderBook {
 
 	private SortedSet<Order> buySet = new TreeSet<>();
 	private SortedSet<Order> sellSet = new TreeSet<>();
-
+	
 	public void addOrder(Order o) {
 		switch (o.getSide()) {
 		case BUY: {
@@ -48,6 +53,9 @@ public class OrderBook {
 					topSellOrder.setOrderStatus(Order.ORDER_STATUS_FULLY_EXECUTED);
 					topBuyOrder.setOrderStatus(Order.ORDER_STATUS_PARTIALLY_EXECUTED);
 					topBuyOrder.setOpenQuantity(topBuyOrder.getOpenQuantity() - executionQuantity);
+					topSellOrder.setOpenQuantity(0);
+					updateOrder(topSellOrder);
+					updateOrder(topBuyOrder);
 					createExecution(executionQuantity, executionPrice, topBuyOrder.getOrderId(), topSellOrder.getOrderId());
 					sellSet.remove(topSellOrder);
 				} else if (topBuyOrder.getOpenQuantity() < topSellOrder.getOpenQuantity()) {
@@ -55,19 +63,30 @@ public class OrderBook {
 					topBuyOrder.setOrderStatus(Order.ORDER_STATUS_FULLY_EXECUTED);
 					topSellOrder.setOrderStatus(Order.ORDER_STATUS_PARTIALLY_EXECUTED);
 					topSellOrder.setOpenQuantity(topSellOrder.getOpenQuantity() - executionQuantity);
+					topBuyOrder.setOpenQuantity(0);
+					updateOrder(topSellOrder);
+					updateOrder(topBuyOrder);
 					createExecution(executionQuantity, executionPrice, topBuyOrder.getOrderId(), topSellOrder.getOrderId());
 					buySet.remove(topBuyOrder);
 				} else {
 					executionQuantity = topBuyOrder.getOpenQuantity();
 					topBuyOrder.setOrderStatus(Order.ORDER_STATUS_FULLY_EXECUTED);
 					topSellOrder.setOrderStatus(Order.ORDER_STATUS_FULLY_EXECUTED);
+					topBuyOrder.setOpenQuantity(0);
+					topSellOrder.setOpenQuantity(0);
 					createExecution(executionQuantity, executionPrice, topBuyOrder.getOrderId(), topSellOrder.getOrderId());
+					updateOrder(topSellOrder);
+					updateOrder(topBuyOrder);
 					buySet.remove(topBuyOrder);
 					sellSet.remove(topSellOrder);
 				}
 				matchOrders();
 			}
 		}
+	}
+	
+	private void updateOrder(Order order) {
+		mongoTemplate.save(order);
 	}
 
 	private void createExecution(int executionQuantity, double executionPrice, String buyOrderId, String sellOrderId) {

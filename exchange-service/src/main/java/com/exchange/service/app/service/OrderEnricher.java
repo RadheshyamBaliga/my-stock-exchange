@@ -14,6 +14,7 @@ public class OrderEnricher {
 		order.setEntryTime(LocalDateTime.now());
 		order.setOrderId(UUID.randomUUID().toString());
 		order.setOpenQuantity(order.getQuantity());
+		order.setOrderStatus(Order.ORDER_STATUS_OPEN);
 	}
 
 }
