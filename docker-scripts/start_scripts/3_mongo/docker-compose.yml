@@ -1,0 +1,18 @@
+version: "3.7"
+
+services:
+    mongodb:
+        image: mongo
+        container_name: mongo
+        hostname: mongo
+        ports:
+            - "27017:27017"
+        volumes:
+            - /data/db:/data/db
+        networks:
+            - mse-network
+            
+networks:
+    mse-network:
+        external:
+            name: mse-network

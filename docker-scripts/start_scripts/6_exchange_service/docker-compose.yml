@@ -1,0 +1,16 @@
+version: "3.7"
+
+services:
+    exchange-service:
+        image: radheshyambaliga/mse-exchange-service
+        container_name: mse-exchange-service
+        environment:
+            - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://mse-discovery-service:8761/eureka
+        restart: on-failure
+        networks:
+            - mse-network
+            
+networks:
+    mse-network:
+        external:
+            name: mse-network

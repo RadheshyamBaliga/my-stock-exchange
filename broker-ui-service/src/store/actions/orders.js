@@ -29,7 +29,7 @@ export const fetchOrders = () => {
     axios
       .get("/exchange-service/orders")
       .then((response) => {
-        console.log("Success");
+        console.log("Success ", response.data);
         dispatch(fetchOrdersSuccess(response.data));
       })
       .catch((error) => {

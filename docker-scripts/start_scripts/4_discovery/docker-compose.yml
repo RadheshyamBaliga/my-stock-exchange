@@ -1,0 +1,18 @@
+version: "3.7"
+
+services:
+    mse-discovery-service:
+        image: radheshyambaliga/mse-discovery-service
+        container_name: mse-discovery-service
+        ports:
+            - "8761:8761"
+        hostname: mse-discovery-service
+        environment:
+            - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://mse-discovery-service:8761/eureka
+        networks:
+            - mse-network
+            
+networks:
+    mse-network:
+        external:
+            name: mse-network

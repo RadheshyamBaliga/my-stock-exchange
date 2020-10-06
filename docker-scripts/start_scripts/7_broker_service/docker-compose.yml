@@ -1,0 +1,17 @@
+version: "3.7"
+
+services:
+    broker-service:
+        image: radheshyambaliga/mse-broker-service
+        container_name: mse-broker-service
+        environment:
+            - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://mse-discovery-service:8761/eureka
+            - "SPRING_PROFILES_ACTIVE=B1"
+        restart: on-failure
+        networks:
+            - mse-network
+            
+networks:
+    mse-network:
+        external:
+            name: mse-network

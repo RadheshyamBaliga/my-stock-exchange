@@ -32,11 +32,12 @@ public class BrokerServiceApplication {
 		 MessageProducer producer = context.getBean(MessageProducer.class);
 		 
 		 OrderService orderService = context.getBean(OrderService.class);
-		 Order o = orderService.createOrder();
-//		 for (int i=0; i < 100; i++) {
-//			 producer.sendOrderMessage(o);	 
-//		 }
-		 producer.sendOrderMessage(o);	 
+		 
+		 for (int i=0; i < 100; i++) {
+			 Order o = orderService.createOrder();
+			 producer.sendOrderMessage(o);	 
+		 }
+//		 producer.sendOrderMessage(o);	 
 		 
 	}
 

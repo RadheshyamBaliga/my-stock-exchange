@@ -15,11 +15,18 @@ public class OrderService {
 	private String brokerId;
 	
 	public Order createOrder() {
+		
 		Order o = new Order();
 		 o.setIsin("DE0006675788");
 		 o.setPrice(10.5);
 		 o.setQuantity(250);
-		 o.setSide(Side.BUY);
+		 double r = Math.random();
+			if (r >= 0.5) {
+				o.setSide(Side.SELL);
+			} else {
+				o.setSide(Side.BUY);		
+			}
+		 
 		 o.setBrokerId(brokerId);
 		 o.setBrokerOrderId(UUID.randomUUID().toString());
 		 return o;

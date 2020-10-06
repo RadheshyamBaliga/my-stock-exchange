@@ -1,0 +1,97 @@
+version: "3.7"
+
+services:
+    mse-discovery-service:
+        image: radheshyambaliga/mse-discovery-service
+        container_name: mse-discovery-service
+        ports:
+            - "8761:8761"
+        hostname: mse-discovery-service
+        environment:
+            - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://mse-discovery-service:8761/eureka
+        networks:
+            - mse-network
+            
+    mse-api-gateway:
+        image: radheshyambaliga/mse-api-gateway
+        container_name: mse-api-gateway
+        ports:
+            - "8050:8050"
+        hostname: mse-api-gateway
+        environment:
+            - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://mse-discovery-service:8761/eureka
+        depends_on:
+            - mse-discovery-service
+        restart: on-failure
+        networks:
+            - mse-network
+
+    exchange-service:
+        image: radheshyambaliga/mse-exchange-service
+        container_name: mse-exchange-service
+        environment:
+            - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://mse-discovery-service:8761/eureka
+        depends_on:
+            - mongodb
+            - kafka
+            - mse-discovery-service
+        restart: on-failure
+        command: ["./wait-for-it.sh", "mongodb:27017", "java", "-jar", "/exchange-service.jar"]
+        networks:
+            - mse-network
+            
+    broker-service:
+        image: radheshyambaliga/mse-broker-service
+        container_name: mse-broker-service
+        environment:
+            - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://mse-discovery-service:8761/eureka
+            - "SPRING_PROFILES_ACTIVE=B1"
+        depends_on:
+            - mse-discovery-service
+            - kafka
+            - exchange-service
+        restart: on-failure
+        networks:
+            - mse-network
+            
+           
+    mongodb:
+        image: mongo
+        container_name: mongo
+        hostname: mongo
+        ports:
+            - "27017:27017"
+        volumes:
+            - /data/db:/data/db
+        networks:
+            - mse-network
+    
+    zookeeper:
+        image: wurstmeister/zookeeper
+        container_name: zookeeper
+        ports:
+            - "2181:2181"
+        networks:
+            - mse-network
+            
+    kafka:
+        image: wurstmeister/kafka
+        container_name: kafka
+        hostname: kafka
+        ports:
+            - "9092:9092"
+        depends_on:
+            - zookeeper
+        environment:
+            #KAFKA_ADVERTISED_HOST_NAME: kafka
+            #KAFKA_ADVERTISED_PORT: 9092
+            KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+            KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+            KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+        networks:
+            - mse-network
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+networks:
+    mse-network:
+        name: mse-network

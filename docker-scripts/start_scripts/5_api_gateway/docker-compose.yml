@@ -1,0 +1,19 @@
+version: "3.7"
+
+services:
+    mse-api-gateway:
+        image: radheshyambaliga/mse-api-gateway
+        container_name: mse-api-gateway
+        ports:
+            - "8050:8050"
+        hostname: mse-api-gateway
+        environment:
+            - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://mse-discovery-service:8761/eureka
+        restart: on-failure
+        networks:
+            - mse-network
+            
+networks:
+    mse-network:
+        external:
+            name: mse-network

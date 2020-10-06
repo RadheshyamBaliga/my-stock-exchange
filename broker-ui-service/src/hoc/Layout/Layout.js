@@ -1,7 +1,7 @@
 import React, { Component } from "react";
-import classes from "./Layout.module.css";
 
 import Header from "../../components/UI/Header/Header";
+import * as classes from "./Layout.module.css";
 
 class Layout extends Component {
   render() {
