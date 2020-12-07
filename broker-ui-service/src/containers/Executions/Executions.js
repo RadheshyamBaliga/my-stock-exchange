@@ -1,15 +1,13 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 
-import { AgGridReact } from "@ag-grid-community/react";
+import { AgGridReact } from "@ag-grid-community/react/lib/agGridReact";
 import { ClientSideRowModelModule } from "@ag-grid-community/client-side-row-model";
-import "@ag-grid-community/all-modules/dist/styles/ag-grid.css";
-import "@ag-grid-community/all-modules/dist/styles/ag-theme-alpine.css";
 
-import * as actions from "../../store/actions/index";
 import Spinner from "../../components/UI/Spinner/Spinner";
+import * as actions from "../../store/actions/index";
 
-class Orders extends Component {
+class Executions extends Component {
   constructor() {
     super();
 
@@ -37,49 +35,23 @@ class Orders extends Component {
 
   onGridReady(params) {
     this.gridApi = params.api;
-    this.setState({ rowData: this.props.orders });
+    this.setState({ rowData: this.props.executions });
   }
 
   componentDidMount() {
-    this.props.onFetchOrders();
+    this.props.onFetchExecutions();
   }
 
   createColumnDefs() {
     return [
       {
-        headerName: "Broker Order ID",
-        field: "brokerOrderId",
+        headerName: "Execution ID",
+        field: "executionId",
         filter: "agTextColumnFilter",
-      },
-      {
-        headerName: "Order ID",
-        field: "orderId",
-        filter: "agTextColumnFilter",
-      },
-      { headerName: "ISIN Code", field: "isin", filter: "agTextColumnFilter" },
-      {
-        headerName: "Status",
-        field: "orderStatus",
-        sortable: true,
-        sortingOrder: ["asc", "desc"],
-        filter: "agTextColumnFilter",
-      },
-      {
-        headerName: "Side",
-        field: "side",
-        sortable: true,
-        sortingOrder: ["asc", "desc"],
       },
       {
         headerName: "Quantity",
         field: "quantity",
-        sortable: true,
-        sortingOrder: ["asc", "desc"],
-        filter: "agNumberColumnFilter",
-      },
-      {
-        headerName: "Open Quantity",
-        field: "openQuantity",
         sortable: true,
         sortingOrder: ["asc", "desc"],
         filter: "agNumberColumnFilter",
@@ -92,20 +64,29 @@ class Orders extends Component {
         filter: "agNumberColumnFilter",
       },
       {
-        headerName: "Entry Time",
-        field: "entryTime",
+        headerName: "Execution Time",
+        field: "createdtime",
         sortable: true,
         sort: "desc",
         sortingOrder: ["asc", "desc"],
       },
-      { headerName: "Broker", field: "brokerId" },
+      {
+        headerName: "Cross Order - Buy",
+        field: "buyOrderId",
+        filter: "agTextColumnFilter",
+      },
+      {
+        headerName: "Cross Order - Sell",
+        field: "sellOrderId",
+        filter: "agTextColumnFilter",
+      },
     ];
   }
 
   render() {
     console.log(this.props.loading);
     if (!this.props.loading) {
-      console.log(this.props.orders);
+      console.log(this.props.executions);
       return (
         <>
           <div style={{ height: "100%" }} className="ag-theme-alpine">
@@ -130,15 +111,15 @@ class Orders extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    orders: state.orders.orders,
-    loading: state.orders.loading,
+    executions: state.executions.executions,
+    loading: state.executions.loading,
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onFetchOrders: () => dispatch(actions.fetchOrders()),
+    onFetchExecutions: () => dispatch(actions.fetchExecutions()),
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Orders);
+export default connect(mapStateToProps, mapDispatchToProps)(Executions);

@@ -27,7 +27,7 @@ export const fetchOrders = () => {
   return (dispatch) => {
     dispatch(fetchOrdersStart());
     axios
-      .get("/exchange-service/orders")
+      .get("/exchange-service/orders", { timeout: 30000 })
       .then((response) => {
         console.log("Success ", response.data);
         dispatch(fetchOrdersSuccess(response.data));

@@ -13,6 +13,8 @@ import "./index.css";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import ordersReducer from "./store/reducers/orders";
+import executionsReducer from "./store/reducers/executions";
+import consoleReducer from "./store/reducers/console";
 
 const composeEnhancers =
   process.env.NODE_ENV === "development"
@@ -21,6 +23,8 @@ const composeEnhancers =
 
 const rootReducer = combineReducers({
   orders: ordersReducer,
+  executions: executionsReducer,
+  console: consoleReducer,
 });
 
 const store = createStore(
